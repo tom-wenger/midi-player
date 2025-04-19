@@ -23,7 +23,7 @@ export class FirstTryComponent {
         this.ctx.fillStyle = 'red';
         // this.ctx.fillRect(50, 50, 100, 100);
 
-        this.loadMidi();
+        // this.loadMidi();
 
         // this.playSomething();
     }
