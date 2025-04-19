@@ -1,11 +1,9 @@
 <main>
-  <!-- canvas.component.html -->
-  <canvas
-    #canvasElement
-    width="500"
-    height="500"
-    style="border: 1px solid #000"
-  ></canvas>
+    <!-- canvas.component.html -->
+    <canvas #canvasElement width="500" height="500" style="border: 1px solid #000"></canvas>
 </main>
+<button (click)="playSomething()">Play</button>
+<button (click)="loadAndPlayMidi('/assets/c-major.mid')">Play Midi</button>
+<button (click)="learning()">learning</button>
 
 <router-outlet />
