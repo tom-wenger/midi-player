@@ -29,6 +29,7 @@ export class FirstTryComponent {
     }
 
     private async loadMidi() {
+        await Tone.start();
         const midiFilePath = '/assets/c-major.mid'; // Adjust the path as needed
         // load a midi file in the browser
         const midi = await Midi.fromUrl(midiFilePath);
@@ -59,6 +60,7 @@ export class FirstTryComponent {
     }
 
     public async playSomething() {
+        await Tone.start();
         // create two monophonic synths
         const synthA = new Tone.FMSynth().toDestination();
         const synthB = new Tone.AMSynth().toDestination();
@@ -84,7 +86,6 @@ export class FirstTryComponent {
         //     synthB.triggerAttackRelease('C4', '8n', time);
         // }, '4n').start('8n');
         // all loops start when the Transport is started
-        await Tone.start();
         Tone.getTransport().start();
         // ramp up to 800 bpm over 10 seconds
         // Tone.getTransport().bpm.rampTo(800, 10);
@@ -100,6 +101,9 @@ export class FirstTryComponent {
     }
 
     public async loadAndPlayMidi(filePath: string, tempoBPM = 120) {
+        // Start audio context (user gesture required)
+        await Tone.start();
+
         // Load MIDI
         const midi = await Midi.fromUrl(filePath);
 
@@ -140,8 +144,6 @@ export class FirstTryComponent {
             part.start(0); // Start at beginning of the transport
         });
 
-        // Start audio context (user gesture required)
-        await Tone.start();
         console.log('Audio is ready');
 
         // Start transport
@@ -149,6 +151,7 @@ export class FirstTryComponent {
     }
 
     public async learning() {
+        await Tone.start();
         const transport = Tone.getTransport();
         transport.bpm.value = 120;
         // transport.schedule(function (time) {
@@ -186,7 +189,6 @@ export class FirstTryComponent {
                 { time: '1:0', note: 'C4', duration: '2n' },
             ],
         );
-        await Tone.start();
 
         part.start(0); // start at beginning
         transport.start(); // start the transport
