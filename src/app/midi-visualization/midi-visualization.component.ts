@@ -2,14 +2,15 @@ import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import * as Tone from 'tone';
 import { TransportClass } from 'tone/build/esm/core/clock/Transport';
+import Note from '../types/Note';
 
-const NOTE_COLORS_RGBA = {
+const NOTE_COLORS_RGB = {
     //https://coolors.co/219ebc
-    1: '142, 202, 230,1',
-    2: '33, 158, 188,1',
-    3: '2, 48, 71,1',
-    4: '255, 183, 3,1',
-    5: '251, 133, 0,1',
+    1: '142, 202, 230',
+    2: '33, 158, 188',
+    3: '2, 48, 71',
+    4: '255, 183, 3',
+    5: '251, 133, 0',
 };
 
 const NOTES_HEIGHTS = {
@@ -20,11 +21,11 @@ const NOTES_HEIGHTS = {
     5: 400,
 };
 
-interface DrawNote {
-    x: number;
-    y: number;
-    color: string;
-}
+// interface DrawNote {
+//     x: number;
+//     y: number;
+//     color: string;
+// }
 
 @Component({
     selector: 'app-midi-visualization',
@@ -47,7 +48,10 @@ export class MidiVisualizationComponent {
 
     transport!: TransportClass;
 
-    objectsToDraw: DrawNote[] = [];
+    notesToDraw: Note[] = [];
+
+    xMiddleScrreen = this.window.innerWidth / 2;
+    yTopOffset = 200;
 
     ngAfterViewInit(): void {
         this.canvas = this.canvasElement().nativeElement;
@@ -77,37 +81,91 @@ export class MidiVisualizationComponent {
         }
         this.isPlaying = true;
         const draw = Tone.getDraw();
-        let i = 50;
+        // let i = 50;
         const loopA = new Tone.Loop(time => {
             this.synthA.triggerAttackRelease('C2', '0:3:0', time);
             const duration = Tone.Time('0:3:0').toSeconds();
             const noteEndTime = time + duration;
 
-            const drawNote: DrawNote = {
-                x: i,
-                y: NOTES_HEIGHTS[5],
-                color: NOTE_COLORS_RGBA[5],
-            };
+            const drawNote = new Note({
+                name: 'C2',
+                duration: duration,
+                noteStartTime: time,
+                noteEndTime: noteEndTime,
+                pitch: 'C',
+                octave: 2,
+                x: this.xMiddleScrreen,
+                y: this.yTopOffset + NOTES_HEIGHTS[5],
+                color: NOTE_COLORS_RGB[5],
+            });
 
-            this.objectsToDraw.push(drawNote);
-
-            // Schedule removal of the note after noteEndTime
-            setTimeout(() => {
-                this.objectsToDraw = this.objectsToDraw.filter(obj => obj !== drawNote);
-            }, duration * 1000); // Convert duration to milliseconds
-
-            draw.schedule(() => {
-                i += 10;
-            }, time);
+            this.notesToDraw.push(drawNote);
+            // draw.schedule(() => {
+            // }, time);
         }, '1m').start(0);
+
         const loopB = new Tone.Loop(time => {
             this.synthB.triggerAttackRelease('G2', '4n', time);
-            draw.schedule(() => {
-                // the callback synced to the animation frame at the given time
-                i += 10;
-                this.drawRect(i, NOTES_HEIGHTS[3], NOTE_COLORS_RGBA[3]);
-            }, time);
+
+            const duration = Tone.Time('4n').toSeconds();
+            const noteEndTime = time + duration;
+            const drawNote = new Note({
+                name: 'G2',
+                duration: duration,
+                noteStartTime: time,
+                noteEndTime: noteEndTime,
+                pitch: 'G',
+                octave: 2,
+                x: this.xMiddleScrreen,
+                y: this.yTopOffset + NOTES_HEIGHTS[4],
+                color: NOTE_COLORS_RGB[4],
+            });
+            this.notesToDraw.push(drawNote);
+
+            // draw.schedule(() => {
+            //     // the callback synced to the animation frame at the given time
+            //     i += 10;
+            //     this.drawRect(i, NOTES_HEIGHTS[3], NOTE_COLORS_RGBA[3]);
+            // }, time);
         }, '1m').start('0:2:0');
+
+        const loopC = new Tone.Loop(time => {
+            this.synthB.triggerAttackRelease('E2', '8n', time);
+
+            const duration = Tone.Time('8n').toSeconds();
+            const noteEndTime = time + duration;
+            const drawNote = new Note({
+                name: 'E2',
+                duration: duration,
+                noteStartTime: time,
+                noteEndTime: noteEndTime,
+                pitch: 'E',
+                octave: 2,
+                x: this.xMiddleScrreen,
+                y: this.yTopOffset + NOTES_HEIGHTS[2],
+                color: NOTE_COLORS_RGB[2],
+            });
+            this.notesToDraw.push(drawNote);
+        }, '4n').start('8n');
+
+        const loopD = new Tone.Loop(time => {
+            this.synthB.triggerAttackRelease('A2', '2n', time); // Set duration to 2 quarter notes (half a bar)
+
+            const duration = Tone.Time('2n').toSeconds(); // Calculate the duration in seconds
+            const noteEndTime = time + duration;
+            const drawNote = new Note({
+                name: 'A2',
+                duration: duration,
+                noteStartTime: time,
+                noteEndTime: noteEndTime,
+                pitch: 'A',
+                octave: 2,
+                x: this.xMiddleScrreen,
+                y: this.yTopOffset + NOTES_HEIGHTS[3],
+                color: NOTE_COLORS_RGB[3],
+            });
+            this.notesToDraw.push(drawNote);
+        }, '1m').start('0:2:0'); // Start at the third quarter note of the bar
 
         this.drawLoop();
 
@@ -127,9 +185,9 @@ export class MidiVisualizationComponent {
     draw() {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         if (this.ctx) {
-            this.objectsToDraw.forEach(object => {
-                this.ctx.fillStyle = 'rgba(' + object.color + ')';
-                this.ctx.fillRect(object.x, object.y, 100, 100);
+            this.notesToDraw = this.notesToDraw.filter(n => n.noteEndTime > Tone.now());
+            this.notesToDraw.forEach(note => {
+                note.draw(this.ctx, Tone.now());
             });
         }
     }
@@ -140,7 +198,7 @@ export class MidiVisualizationComponent {
 
     initialize() {
         this.transport = Tone.getTransport();
-        this.transport.bpm.value = 60; // or any number you want
+        this.transport.bpm.value = 120; // or any number you want
         this.transport.timeSignature = [4, 4];
         this.transport.scheduleRepeat(time => {
             console.log('tick');
