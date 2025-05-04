@@ -3,22 +3,26 @@ export type NoteConfig = {
     duration: number;
     noteStartTime: number;
     noteEndTime: number;
-    pitch: string;
+    note: string;
     octave: number;
     x: number;
     y: number;
+    width: number;
+    height: number;
     color: string;
 };
 
-class Note {
+export class Note {
     name: string;
     duration: number;
     noteStartTime: number;
     noteEndTime: number;
-    pitch: string;
+    note: string;
     octave: number;
     x: number;
     y: number;
+    width: number;
+    height: number;
     color: string;
     opacity = 1;
 
@@ -27,10 +31,12 @@ class Note {
         this.duration = config.duration;
         this.noteStartTime = config.noteStartTime;
         this.noteEndTime = config.noteEndTime;
-        this.pitch = config.pitch;
+        this.note = config.note;
         this.octave = config.octave;
         this.x = config.x;
         this.y = config.y;
+        this.width = config.width;
+        this.height = config.height;
         this.color = config.color;
     }
 
@@ -44,8 +50,15 @@ class Note {
 
         ctx.fillStyle = 'rgba(' + this.color + ', ' + this.opacity + ')';
 
-        ctx.fillRect(this.x, this.y, 100, 100);
+        ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
 
-export default Note;
+export type Notesquare = {
+    ocatave: number;
+    note: string;
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+};
