@@ -117,19 +117,19 @@ export class MidiVisualizationComponent {
         }, '1m').start(0);
 
         const loopB = new Tone.Loop(time => {
-            this.synthB.triggerAttackRelease('G2', '4n', time);
+            this.synthB.triggerAttackRelease('E3', '4n', time);
 
             const duration = Tone.Time('4n').toSeconds();
             const noteEndTime = time + duration;
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'G' && noteSquare.ocatave === 2);
+            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'E' && noteSquare.ocatave === 3);
             if (noteSquare) {
                 const drawNote = new Note({
-                    name: 'G2',
+                    name: 'E3',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'G',
-                    octave: 2,
+                    note: 'E',
+                    octave: 3,
                     x: noteSquare.x,
                     y: noteSquare.y,
                     width: noteSquare.width,
@@ -141,20 +141,20 @@ export class MidiVisualizationComponent {
         }, '1m').start('0:2:0');
 
         const loopC = new Tone.Loop(time => {
-            this.synthB.triggerAttackRelease('E2', '8n', time);
+            this.synthB.triggerAttackRelease('D4', '8n', time);
 
             const duration = Tone.Time('8n').toSeconds();
             const noteEndTime = time + duration;
 
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'E' && noteSquare.ocatave === 2);
+            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'D' && noteSquare.ocatave === 4);
             if (noteSquare) {
                 const drawNote = new Note({
-                    name: 'E2',
+                    name: 'D4',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'E',
-                    octave: 2,
+                    note: 'D',
+                    octave: 4,
                     x: noteSquare.x,
                     y: noteSquare.y,
                     width: noteSquare.width,
@@ -163,23 +163,23 @@ export class MidiVisualizationComponent {
                 });
                 this.notesToDraw.push(drawNote);
             }
-        }, '4n').start('8n');
+        }, '0:2:0').start('8n');
 
         const loopD = new Tone.Loop(time => {
-            this.synthB.triggerAttackRelease('A2', '2n', time); // Set duration to 2 quarter notes (half a bar)
+            this.synthB.triggerAttackRelease('A3', '2n', time); // Set duration to 2 quarter notes (half a bar)
 
             const duration = Tone.Time('2n').toSeconds();
             const noteEndTime = time + duration;
 
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'A' && noteSquare.ocatave === 2);
+            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'A' && noteSquare.ocatave === 3);
             if (noteSquare) {
                 const drawNote = new Note({
-                    name: 'A2',
+                    name: 'A3',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
                     note: 'A',
-                    octave: 2,
+                    octave: 3,
                     x: noteSquare.x,
                     y: noteSquare.y,
                     width: noteSquare.width,
@@ -188,7 +188,7 @@ export class MidiVisualizationComponent {
                 });
                 this.notesToDraw.push(drawNote);
             }
-        }, '1m').start('0:2:0'); // Start at the third quarter note of the bar
+        }, '1m').start('0:3:0'); // Start at the third quarter note of the bar
 
         this.drawLoop();
 
