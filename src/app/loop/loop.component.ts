@@ -2,9 +2,9 @@ import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import * as Tone from 'tone';
 import { TransportClass } from 'tone/build/esm/core/clock/Transport';
-import { Note, Notesquare } from '../lib/notes';
-import { drawNotesSquares, initializeNoteSquares } from '../lib/notesquares';
-import { makeSynth } from '../lib/synths';
+import { Note } from '../lib/notes';
+import { drawNotesSquares, initializeNoteSquares, Notesquare } from '../lib/notesquares';
+import { makeFMSynth } from '../lib/synths';
 
 const NOTE_COLORS_RGB = {
     //https://coolors.co/219ebc
@@ -13,14 +13,6 @@ const NOTE_COLORS_RGB = {
     3: '2, 48, 71',
     4: '255, 183, 3',
     5: '251, 133, 0',
-};
-
-const NOTES_HEIGHTS = {
-    1: 0,
-    2: 100,
-    3: 200,
-    4: 300,
-    5: 400,
 };
 
 const NOTE_NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -55,13 +47,8 @@ export class LoopComponent {
     notesToDraw: Note[] = [];
     noteSquares: Notesquare[] = [];
 
-    xMiddleScrreen = this.window.innerWidth / 2;
-    yTopOffset = 200;
-
     ngAfterViewInit(): void {
         this.canvas = this.canvasElement().nativeElement;
-
-        console.log('canvas', this.canvas);
         this.canvas.width = this.window.innerWidth;
         this.canvas.height = this.window.innerHeight;
 
@@ -74,8 +61,8 @@ export class LoopComponent {
         });
 
         this.noteSquares = initializeNoteSquares({
-            octaves: 3,
             startOctave: 2,
+            endOctave: 5,
             noteNames: NOTE_NAMES,
             canvas: this.canvas,
         });
@@ -103,14 +90,16 @@ export class LoopComponent {
             const duration = Tone.Time('0:3:0').toSeconds();
             const noteEndTime = time + duration;
 
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'C' && noteSquare.ocatave === 2);
+            const noteSquare = this.noteSquares.find(
+                noteSquare => noteSquare.pitch === 'C' && noteSquare.ocatave === 2,
+            );
             if (noteSquare) {
                 const drawNote = new Note({
                     name: 'C2',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'C',
+                    pitch: 'C',
                     octave: 2,
                     x: noteSquare.x,
                     y: noteSquare.y,
@@ -130,14 +119,16 @@ export class LoopComponent {
 
             const duration = Tone.Time('4n').toSeconds();
             const noteEndTime = time + duration;
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'E' && noteSquare.ocatave === 3);
+            const noteSquare = this.noteSquares.find(
+                noteSquare => noteSquare.pitch === 'E' && noteSquare.ocatave === 3,
+            );
             if (noteSquare) {
                 const drawNote = new Note({
                     name: 'E3',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'E',
+                    pitch: 'E',
                     octave: 3,
                     x: noteSquare.x,
                     y: noteSquare.y,
@@ -155,14 +146,16 @@ export class LoopComponent {
             const duration = Tone.Time('8n').toSeconds();
             const noteEndTime = time + duration;
 
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'D' && noteSquare.ocatave === 4);
+            const noteSquare = this.noteSquares.find(
+                noteSquare => noteSquare.pitch === 'D' && noteSquare.ocatave === 4,
+            );
             if (noteSquare) {
                 const drawNote = new Note({
                     name: 'D4',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'D',
+                    pitch: 'D',
                     octave: 4,
                     x: noteSquare.x,
                     y: noteSquare.y,
@@ -180,14 +173,16 @@ export class LoopComponent {
             const duration = Tone.Time('2n').toSeconds();
             const noteEndTime = time + duration;
 
-            const noteSquare = this.noteSquares.find(noteSquare => noteSquare.note === 'A' && noteSquare.ocatave === 3);
+            const noteSquare = this.noteSquares.find(
+                noteSquare => noteSquare.pitch === 'A' && noteSquare.ocatave === 3,
+            );
             if (noteSquare) {
                 const drawNote = new Note({
                     name: 'A3',
                     duration: duration,
                     noteStartTime: time,
                     noteEndTime: noteEndTime,
-                    note: 'A',
+                    pitch: 'A',
                     octave: 3,
                     x: noteSquare.x,
                     y: noteSquare.y,
@@ -232,31 +227,7 @@ export class LoopComponent {
     }
 
     initializeSynths() {
-        this.synthA = makeSynth();
-        this.synthB = makeSynth();
-    }
-
-    initializeNoteSquares() {
-        const OCTAVES = 3;
-        const START_OCTAVE = 2;
-        const NOTE_NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
-        const NOTES_PER_OCTAVE = 7;
-        const NOTE_WIDTH = this.canvas.width / NOTES_PER_OCTAVE;
-        const NOTE_HEIGHT = this.canvas.height / OCTAVES;
-
-        for (let i = 0; i < OCTAVES; i++) {
-            for (let j = 0; j < NOTES_PER_OCTAVE; j++) {
-                const x = j * NOTE_WIDTH;
-                const y = i * NOTE_HEIGHT;
-                this.noteSquares.push({
-                    ocatave: START_OCTAVE + OCTAVES - 1 - i,
-                    note: NOTE_NAMES[j],
-                    x: x,
-                    y: y,
-                    width: NOTE_WIDTH,
-                    height: NOTE_HEIGHT,
-                });
-            }
-        }
+        this.synthA = makeFMSynth();
+        this.synthB = makeFMSynth();
     }
 }

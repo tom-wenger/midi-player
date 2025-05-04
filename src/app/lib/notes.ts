@@ -3,7 +3,7 @@ export type NoteConfig = {
     duration: number;
     noteStartTime: number;
     noteEndTime: number;
-    note: string;
+    pitch: string;
     octave: number;
     x: number;
     y: number;
@@ -12,12 +12,15 @@ export type NoteConfig = {
     color: string;
 };
 
+export const C_MAJOR = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+export const CHROMATIC = ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'];
+
 export class Note {
     name: string;
     duration: number;
     noteStartTime: number;
     noteEndTime: number;
-    note: string;
+    pitch: string;
     octave: number;
     x: number;
     y: number;
@@ -31,7 +34,7 @@ export class Note {
         this.duration = config.duration;
         this.noteStartTime = config.noteStartTime;
         this.noteEndTime = config.noteEndTime;
-        this.note = config.note;
+        this.pitch = config.pitch;
         this.octave = config.octave;
         this.x = config.x;
         this.y = config.y;
@@ -53,12 +56,3 @@ export class Note {
         ctx.fillRect(this.x, this.y, this.width, this.height);
     }
 }
-
-export type Notesquare = {
-    ocatave: number;
-    note: string;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-};
