@@ -2,8 +2,9 @@ import { DOCUMENT } from '@angular/common';
 import { Component, ElementRef, inject, viewChild } from '@angular/core';
 import * as Tone from 'tone';
 import { TransportClass } from 'tone/build/esm/core/clock/Transport';
-import { makeSynth } from '../sounds/synths';
-import { Note, Notesquare } from '../types/Note';
+import { Note, Notesquare } from '../lib/notes';
+import { drawNotesSquares, initializeNoteSquares } from '../lib/notesquares';
+import { makeSynth } from '../lib/synths';
 
 const NOTE_COLORS_RGB = {
     //https://coolors.co/219ebc
@@ -22,6 +23,8 @@ const NOTES_HEIGHTS = {
     5: 400,
 };
 
+const NOTE_NAMES = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
+
 // interface DrawNote {
 //     x: number;
 //     y: number;
@@ -29,12 +32,12 @@ const NOTES_HEIGHTS = {
 // }
 
 @Component({
-    selector: 'app-midi-visualization',
+    selector: 'app-loop',
     imports: [],
-    templateUrl: './midi-visualization.component.html',
-    styleUrl: './midi-visualization.component.scss',
+    templateUrl: './loop.component.html',
+    styleUrl: './loop.component.scss',
 })
-export class MidiVisualizationComponent {
+export class LoopComponent {
     private readonly document = inject(DOCUMENT);
     private window = this.document.defaultView!;
 
@@ -70,8 +73,14 @@ export class MidiVisualizationComponent {
             this.canvas.height = this.window.innerHeight;
         });
 
-        this.initializeNoteSquares();
-        this.drawNotesSquares();
+        this.noteSquares = initializeNoteSquares({
+            octaves: 3,
+            startOctave: 2,
+            noteNames: NOTE_NAMES,
+            canvas: this.canvas,
+        });
+
+        drawNotesSquares(this.noteSquares, this.ctx);
     }
 
     public async playSomething() {
@@ -206,17 +215,9 @@ export class MidiVisualizationComponent {
         }
     }
 
-    drawNotesSquares() {
-        this.noteSquares.forEach(noteSquare => {
-            console.log('noteSquare', noteSquare);
-            this.ctx.fillStyle = 'rgb(9, 9, 9)';
-            this.ctx.fillRect(noteSquare.x, noteSquare.y, noteSquare.width, noteSquare.height);
-        });
-    }
-
     drawLoop = () => {
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.drawNotesSquares();
+        drawNotesSquares(this.noteSquares, this.ctx);
         this.draw();
         requestAnimationFrame(this.drawLoop);
     };

@@ -1,11 +1,4 @@
 import { Routes } from '@angular/router';
-import { MidiVisualizationComponent } from './midi-visualization/midi-visualization.component';
-import { TestComponent } from './test/test.component';
+import { LoopComponent } from './loop/loop.component';
 
-export const routes: Routes = [
-    { path: '', component: MidiVisualizationComponent },
-    {
-        path: 'test',
-        component: TestComponent,
-    },
-];
+export const routes: Routes = [{ path: '', component: LoopComponent }];
